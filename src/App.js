@@ -17,6 +17,7 @@ import * as tf from "@tensorflow/tfjs";
 
 // NEW MODEL
 import * as facemesh from "@tensorflow-models/face-landmarks-detection";
+import * as posenet from "@tensorflow-models/posenet";
 import Webcam from "react-webcam";
 import { drawMesh } from "./utilities";
 
@@ -32,10 +33,13 @@ function App() {
     //   scale: 0.8,
     // });
     // NEW MODEL
-    const net = await facemesh.load(facemesh.SupportedPackages.mediapipeFacemesh);
+    const net = await facemesh.load(
+      facemesh.SupportedPackages.mediapipeFacemesh
+    );
+    // const net = await posenet.load();
     setInterval(() => {
       detect(net);
-    }, 10);
+    }, 5);
   };
 
   const detect = async (net) => {
@@ -61,16 +65,25 @@ function App() {
       // OLD MODEL
       //       const face = await net.estimateFaces(video);
       // NEW MODEL
-      const face = await net.estimateFaces({input:video});
+      const face = await net.estimateFaces({ input: video });
+      // const pose = await net.estimateSinglePose(video, {
+      //   flipHorizontal: false,
+      // });
       console.log(face);
+      // console.log(pose);
 
       // Get canvas context
       const ctx = canvasRef.current.getContext("2d");
-      requestAnimationFrame(()=>{drawMesh(face, ctx)});
+      requestAnimationFrame(() => {
+        drawMesh(face, ctx);
+        // drawMesh(pose, ctx);
+      });
     }
   };
 
-  useEffect(()=>{runFacemesh()}, []);
+  useEffect(() => {
+    runFacemesh();
+  }, []);
 
   return (
     <div className="App">
